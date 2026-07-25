@@ -28,7 +28,7 @@ their progress intact?
 
 Include:
 
-1. A welcome screen with a display name and one fixed mascot, Momo.
+1. A welcome screen with a display name and one fixed mascot, Tintinsito.
 2. A calm, responsive home screen with current XP and progress.
 3. Low, medium, high, and surprise-me energy choices.
 4. Optional 10, 20, 30, or 45+ minute preference.

@@ -22,9 +22,9 @@
     discover: "Discover",
     guided: "Guided example",
     "make-it-yours": "Make it yours",
-    solo: "Solo quest",
-    teach: "Teach Momo",
-    boss: "Boss quest"
+    solo: "Independent task",
+    teach: "Teach Tintinsito",
+    boss: "Challenge task"
   };
 
   const energyLabels = {
@@ -44,6 +44,7 @@
   ];
 
   const app = {
+    courseTopics: [],
     worlds: [],
     quests: [],
     state: null,
@@ -88,6 +89,63 @@
     return app.quests.filter(
       (quest) => Recommendations.statusFor(quest, app.state) === "completed"
     );
+  }
+
+  function subtopicStatus(subtopic) {
+    const manualStatus = app.state.topicAssessments[subtopic.id];
+    if (["unchecked", "unclear", "understood"].includes(manualStatus)) {
+      return manualStatus;
+    }
+
+    const progressItems = subtopic.taskIds
+      .map((taskId) => app.state.questProgress[taskId])
+      .filter(Boolean);
+    if (progressItems.length === 0) return "unchecked";
+    if (
+      progressItems.some((progress) =>
+        ["in-progress", "stuck"].includes(progress.status)
+      )
+    ) {
+      return "unclear";
+    }
+
+    const allTasksComplete =
+      subtopic.taskIds.length > 0 &&
+      subtopic.taskIds.every(
+        (taskId) => app.state.questProgress[taskId]?.status === "completed"
+      );
+    const confidenceIsSolid = subtopic.taskIds.every(
+      (taskId) => Number(app.state.questProgress[taskId]?.confidenceAfter) >= 3
+    );
+    return allTasksComplete && confidenceIsSolid ? "understood" : "unclear";
+  }
+
+  function courseTopicStatus(courseTopic) {
+    const statuses = courseTopic.subtopics.map(subtopicStatus);
+    if (statuses.every((status) => status === "understood")) return "understood";
+    if (statuses.every((status) => status === "unchecked")) return "unchecked";
+    return "unclear";
+  }
+
+  function courseProgress() {
+    const subtopics = app.courseTopics.flatMap((topic) => topic.subtopics);
+    const counts = { understood: 0, unclear: 0, unchecked: 0 };
+    subtopics.forEach((subtopic) => {
+      counts[subtopicStatus(subtopic)] += 1;
+    });
+    return {
+      total: subtopics.length,
+      counts,
+      percent: Math.round((counts.understood / subtopics.length) * 100)
+    };
+  }
+
+  function understandingLabel(status) {
+    return {
+      understood: "Understood",
+      unclear: "Unclear",
+      unchecked: "Unchecked"
+    }[status];
   }
 
   function statusLabel(status) {
@@ -187,13 +245,18 @@
     }
   }
 
-  function validateContent(worlds, quests) {
+  function validateContent(courseTopics, worlds, quests) {
     const problems = [];
+    const courseTopicIds = new Set();
+    const subtopicIds = new Set();
     const worldIds = new Set();
     const questIds = new Set();
     const validEnergy = new Set(["low", "medium", "high"]);
     const validTypes = new Set(Object.keys(typeLabels));
 
+    if (!Array.isArray(courseTopics) || courseTopics.length === 0) {
+      problems.push("No course topics were found.");
+    }
     if (!Array.isArray(worlds) || worlds.length === 0) {
       problems.push("No worlds were found.");
     }
@@ -207,6 +270,30 @@
         problems.push(`Invalid or duplicate world ID: ${world.id || "missing"}`);
       }
       worldIds.add(world.id);
+    });
+
+    courseTopics.forEach((courseTopic) => {
+      if (!courseTopic.id || courseTopicIds.has(courseTopic.id)) {
+        problems.push(
+          `Invalid or duplicate course topic ID: ${courseTopic.id || "missing"}`
+        );
+      }
+      courseTopicIds.add(courseTopic.id);
+      if (!Array.isArray(courseTopic.subtopics) || !courseTopic.subtopics.length) {
+        problems.push(`Course topic ${courseTopic.id} has no subtopics.`);
+        return;
+      }
+      courseTopic.subtopics.forEach((subtopic) => {
+        if (!subtopic.id || subtopicIds.has(subtopic.id)) {
+          problems.push(
+            `Invalid or duplicate subtopic ID: ${subtopic.id || "missing"}`
+          );
+        }
+        subtopicIds.add(subtopic.id);
+        if (!Array.isArray(subtopic.taskIds)) {
+          problems.push(`Subtopic ${subtopic.id} has invalid task references.`);
+        }
+      });
     });
 
     quests.forEach((quest) => {
@@ -238,6 +325,27 @@
       if (!Array.isArray(quest.prerequisites)) {
         problems.push(`Quest ${quest.id} has invalid prerequisites.`);
       }
+      if (quest.questions !== undefined) {
+        if (!Array.isArray(quest.questions) || quest.questions.length === 0) {
+          problems.push(`Task ${quest.id} has invalid questions.`);
+        } else {
+          quest.questions.forEach((question) => {
+            const optionIds = new Set(
+              Array.isArray(question.options)
+                ? question.options.map((option) => option.id)
+                : []
+            );
+            if (
+              !question.id ||
+              !question.prompt ||
+              optionIds.size < 2 ||
+              !optionIds.has(question.correctOptionId)
+            ) {
+              problems.push(`Task ${quest.id} has an invalid multiple-choice question.`);
+            }
+          });
+        }
+      }
     });
 
     quests.forEach((quest) => {
@@ -245,6 +353,16 @@
         if (!questIds.has(prerequisiteId)) {
           problems.push(`Quest ${quest.id} has a missing prerequisite.`);
         }
+      });
+    });
+
+    courseTopics.forEach((courseTopic) => {
+      courseTopic.subtopics.forEach((subtopic) => {
+        subtopic.taskIds.forEach((taskId) => {
+          if (!questIds.has(taskId)) {
+            problems.push(`Subtopic ${subtopic.id} references a missing task.`);
+          }
+        });
       });
     });
 
@@ -266,8 +384,8 @@
     quests.forEach((quest) => visit(quest.id));
 
     if (problems.length) {
-      console.error("Quest content validation failed:", problems);
-      throw new Error("The quest library needs attention before it can open.");
+      console.error("Course content validation failed:", problems);
+      throw new Error("The topic library needs attention before it can open.");
     }
   }
 
@@ -276,7 +394,7 @@
       <section class="welcome-layout">
         <div class="welcome-copy">
           <span class="soft-label">A schedule-free Java companion</span>
-          <h1>Grow your Java skills,<br><em>one tiny quest at a time.</em></h1>
+          <h1>Grow your Java skills,<br><em>one topic at a time.</em></h1>
           <p class="lead">
             Choose what fits your energy today. There are no daily streaks,
             no punishments, and no need to see the whole course at once.
@@ -291,12 +409,12 @@
         <div class="onboarding-card">
           <div class="mascot-introduction">
             <span class="sparkle sparkle-one" aria-hidden="true">✦</span>
-            <img src="./assets/momo.svg" alt="Momo the bunny" width="150" height="150">
+            <img src="./assets/tintinsito.svg" alt="Tintinsito the bunny" width="150" height="150">
             <span class="sparkle sparkle-two" aria-hidden="true">✦</span>
           </div>
           <span class="eyebrow">Meet your garden guide</span>
-          <h2>Momo is ready when you are.</h2>
-          <p>What should Momo call you? A nickname is perfect.</p>
+          <h2>Tintinsito is ready when you are.</h2>
+          <p>What should Tintinsito call you? A nickname is perfect.</p>
           <form id="welcome-form">
             <label for="display-name">Your garden name</label>
             <input
@@ -346,7 +464,7 @@
                   low: "5–15 min",
                   medium: "15–30 min",
                   high: "30–60 min",
-                  surprise: "Momo picks"
+                  surprise: "Tintinsito picks"
                 }[energy]
               }</small>
             </button>
@@ -372,18 +490,19 @@
     const world = worldById(quest.worldId);
     const actionLabel =
       app.state.activeQuestId === quest.id || status === "in-progress"
-        ? "Continue quest"
+        ? "Continue task"
         : status === "stuck"
           ? "Return gently"
           : status === "completed"
-            ? "Review quest"
+            ? "Review task"
             : status === "locked"
               ? "Locked"
-              : "See quest";
+              : "Open task";
     return `
       <article class="quest-card ${compact ? "quest-card-compact" : ""} ${statusClass(status)}">
         <div class="quest-card-topline">
           <span class="quest-type">${escapeHTML(typeLabels[quest.type])}</span>
+          ${quest.questions?.length ? '<span class="qa-badge">Q&amp;A</span>' : ""}
           <span class="status-chip ${statusClass(status)}">${escapeHTML(statusLabel(status))}</span>
         </div>
         <div class="quest-symbol accent-${escapeHTML(world.accent)}" aria-hidden="true">
@@ -392,7 +511,7 @@
         <p class="official-topic">${escapeHTML(quest.topic)}</p>
         <h3>${escapeHTML(quest.title)}</h3>
         <p>${escapeHTML(quest.description)}</p>
-        <div class="quest-facts" aria-label="Quest details">
+        <div class="quest-facts" aria-label="Task details">
           <span><span aria-hidden="true">◷</span> ${quest.estimatedMinutes} min</span>
           <span><span aria-hidden="true">◆</span> ${quest.xp} XP</span>
           <span><span aria-hidden="true">${"●".repeat(quest.difficulty)}${"○".repeat(3 - quest.difficulty)}</span> <span class="sr-only">Difficulty ${quest.difficulty} of 3</span></span>
@@ -417,7 +536,7 @@
       <section class="celebration-card" aria-labelledby="celebration-title">
         <div class="celebration-stars" aria-hidden="true">✦ ❀ ✦</div>
         <div>
-          <span class="eyebrow">Quest complete · +${xp} XP</span>
+          <span class="eyebrow">Task complete · +${xp} XP</span>
           <h2 id="celebration-title">${escapeHTML(quest.title)} is growing!</h2>
           <p>${
             unlocked
@@ -428,6 +547,32 @@
         <button class="icon-button" type="button" data-action="dismiss-celebration">
           <span class="sr-only">Dismiss completion message</span>
           <span aria-hidden="true">×</span>
+        </button>
+      </section>
+    `;
+  }
+
+  function courseSnapshot() {
+    const progress = courseProgress();
+    return `
+      <section class="course-snapshot" aria-labelledby="course-snapshot-heading">
+        <div>
+          <span class="eyebrow">Whole-course view</span>
+          <h2 id="course-snapshot-heading">${progress.counts.understood} of ${progress.total} subtopics understood</h2>
+          <p>Track every official topic as understood, unclear, or unchecked.</p>
+        </div>
+        <div class="understanding-bar" role="img" aria-label="${progress.counts.understood} understood, ${progress.counts.unclear} unclear, ${progress.counts.unchecked} unchecked">
+          <span class="bar-understood" style="width:${(progress.counts.understood / progress.total) * 100}%"></span>
+          <span class="bar-unclear" style="width:${(progress.counts.unclear / progress.total) * 100}%"></span>
+          <span class="bar-unchecked" style="width:${(progress.counts.unchecked / progress.total) * 100}%"></span>
+        </div>
+        <div class="understanding-counts">
+          <span class="understanding-understood"><strong>${progress.counts.understood}</strong> Understood</span>
+          <span class="understanding-unclear"><strong>${progress.counts.unclear}</strong> Unclear</span>
+          <span class="understanding-unchecked"><strong>${progress.counts.unchecked}</strong> Unchecked</span>
+        </div>
+        <button class="button button-secondary" type="button" data-nav="quests">
+          View all topics <span aria-hidden="true">→</span>
         </button>
       </section>
     `;
@@ -464,19 +609,21 @@
         </div>
         <div class="hero-illustration">
           <img class="garden-backdrop" src="./assets/garden.svg" alt="">
-          <img class="hero-momo" src="./assets/momo.svg" alt="Momo the bunny" width="130" height="130">
+          <img class="hero-tintinsito" src="./assets/tintinsito.svg" alt="Tintinsito the bunny" width="130" height="130">
           <p>“${complete.length ? "You came back. That counts." : "One tiny step is enough."}”</p>
         </div>
       </section>
+
+      ${courseSnapshot()}
 
       ${preferenceControls()}
 
       <section class="recommendation-section" aria-labelledby="recommendation-heading">
         <div class="section-heading">
           <div>
-            <span class="eyebrow">Momo’s picks</span>
+            <span class="eyebrow">Tintinsito’s suggestions</span>
             <h2 id="recommendation-heading">${
-              recommendations.length ? "A few gentle next steps" : "The first garden is complete!"
+              recommendations.length ? "A few gentle learning tasks" : "The first set of topics is complete!"
             }</h2>
           </div>
           ${
@@ -491,9 +638,9 @@
             : `
               <div class="empty-card">
                 <span class="empty-icon" aria-hidden="true">✿</span>
-                <h3>You completed every v0.1 quest.</h3>
-                <p>Review any quest you like, or enjoy the garden you grew.</p>
-                <button class="button button-secondary" type="button" data-nav="quests">Review quests</button>
+                <h3>You completed every available task.</h3>
+                <p>Review any topic you like, or update the whole-course understanding map.</p>
+                <button class="button button-secondary" type="button" data-nav="quests">Review topics</button>
               </div>
             `
         }
@@ -502,12 +649,68 @@
       <section class="progress-strip" aria-labelledby="journey-heading">
         <div>
           <span class="eyebrow">Your path so far</span>
-          <h2 id="journey-heading">${complete.length} of ${app.quests.length} quests complete</h2>
+          <h2 id="journey-heading">${complete.length} of ${app.quests.length} learning tasks complete</h2>
         </div>
-        <div class="wide-progress" role="progressbar" aria-valuemin="0" aria-valuemax="${app.quests.length}" aria-valuenow="${complete.length}" aria-label="${complete.length} of ${app.quests.length} quests complete">
+        <div class="wide-progress" role="progressbar" aria-valuemin="0" aria-valuemax="${app.quests.length}" aria-valuenow="${complete.length}" aria-label="${complete.length} of ${app.quests.length} learning tasks complete">
           <span style="width: ${(complete.length / app.quests.length) * 100}%"></span>
         </div>
         <button class="button button-quiet" type="button" data-nav="garden">Visit my garden</button>
+      </section>
+    `;
+  }
+
+  function questionTasks(quest, progress, status) {
+    if (!quest.questions?.length || status === "locked") return "";
+    const quizAnswers = progress.quizAnswers || {};
+    return `
+      <section class="qa-section" aria-labelledby="qa-heading">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Knowledge check</span>
+            <h2 id="qa-heading">Try a real Q&amp;A task</h2>
+            <p>Choose an answer and check it immediately. A wrong answer is a clue, not a penalty.</p>
+          </div>
+          <span class="qa-total">${quest.questions.length} question${quest.questions.length === 1 ? "" : "s"}</span>
+        </div>
+        <div class="qa-list">
+          ${quest.questions.map((question, questionIndex) => {
+            const savedAnswer = quizAnswers[question.id];
+            const feedbackClass = savedAnswer?.isCorrect ? "qa-correct" : "qa-incorrect";
+            const feedbackText = savedAnswer
+              ? savedAnswer.isCorrect
+                ? question.correctExplanation
+                : question.incorrectExplanation
+              : "";
+            return `
+              <form class="qa-card qa-form ${savedAnswer ? savedAnswer.isCorrect ? "qa-answer-correct" : "qa-answer-incorrect" : ""}" data-question-id="${escapeHTML(question.id)}" data-task-id="${escapeHTML(quest.id)}">
+                <fieldset>
+                  <legend><span>${questionIndex + 1}</span>${escapeHTML(question.prompt)}</legend>
+                  <div class="answer-options">
+                    ${question.options.map((option) => `
+                      <label class="answer-option">
+                        <input
+                          type="radio"
+                          name="answer"
+                          value="${escapeHTML(option.id)}"
+                          ${savedAnswer?.selectedOptionId === option.id ? "checked" : ""}
+                        >
+                        <span>${escapeHTML(option.text)}</span>
+                      </label>
+                    `).join("")}
+                  </div>
+                </fieldset>
+                <div class="qa-actions">
+                  <button class="button button-secondary" type="submit">
+                    ${savedAnswer ? "Check again" : "Check answer"}
+                  </button>
+                  <p class="qa-feedback ${savedAnswer ? feedbackClass : ""}" aria-live="polite">
+                    ${savedAnswer ? escapeHTML(feedbackText) : "No answer checked yet."}
+                  </p>
+                </div>
+              </form>
+            `;
+          }).join("")}
+        </div>
       </section>
     `;
   }
@@ -528,23 +731,23 @@
     const actionButtons = [];
 
     if (status === "available") {
-      actionButtons.push('<button class="button button-primary" type="button" data-action="start-quest">Start this quest</button>');
+      actionButtons.push('<button class="button button-primary" type="button" data-action="start-quest">Start this task</button>');
     } else if (status === "in-progress" && !isActive) {
-      actionButtons.push('<button class="button button-primary" type="button" data-action="start-quest">Continue this quest</button>');
+      actionButtons.push('<button class="button button-primary" type="button" data-action="start-quest">Continue this task</button>');
     } else if (status === "stuck") {
-      actionButtons.push('<button class="button button-primary" type="button" data-action="start-quest">Return to this quest</button>');
+      actionButtons.push('<button class="button button-primary" type="button" data-action="start-quest">Return to this task</button>');
     } else if (isActive) {
       actionButtons.push('<button class="button button-quiet" type="button" data-action="pause-quest">Pause for now</button>');
     }
 
     if (canWork) {
       actionButtons.push('<button class="button button-support" type="button" data-action="open-stuck">I’m stuck</button>');
-      actionButtons.push('<button class="button button-primary" type="button" data-action="open-complete">Complete quest</button>');
+      actionButtons.push('<button class="button button-primary" type="button" data-action="open-complete">Complete task</button>');
     }
 
     main.innerHTML = `
       <button class="back-button" type="button" data-nav="quests">
-        <span aria-hidden="true">←</span> All quests
+        <span aria-hidden="true">←</span> All topics
       </button>
 
       <article class="quest-page">
@@ -564,7 +767,7 @@
             </div>
           </div>
           <div class="mascot-note">
-            <img src="./assets/momo.svg" alt="" width="92" height="92">
+            <img src="./assets/tintinsito.svg" alt="" width="92" height="92">
             <p>“${escapeHTML(quest.mascotMessage)}”</p>
           </div>
         </header>
@@ -576,7 +779,7 @@
                 <span aria-hidden="true">⌁</span>
                 <div>
                   <h2>This path is still growing.</h2>
-                  <p>Complete the earlier quest${quest.prerequisites.length === 1 ? "" : "s"} first. You do not need to rush.</p>
+                  <p>Complete the earlier task${quest.prerequisites.length === 1 ? "" : "s"} first. You do not need to rush.</p>
                 </div>
               </div>
             `
@@ -586,7 +789,7 @@
         <div class="quest-page-grid">
           <section class="steps-card" aria-labelledby="steps-heading">
             <span class="eyebrow">Your path</span>
-            <h2 id="steps-heading">Quest steps</h2>
+            <h2 id="steps-heading">Learning-task steps</h2>
             <ol class="quest-steps">
               ${quest.instructions.map((instruction) => `<li><span>${escapeHTML(instruction)}</span></li>`).join("")}
             </ol>
@@ -622,6 +825,8 @@
           </aside>
         </div>
 
+        ${questionTasks(quest, progress, status)}
+
         ${
           status === "completed"
             ? `
@@ -629,7 +834,7 @@
                 <span class="completed-seal" aria-hidden="true">✓</span>
                 <div>
                   <span class="eyebrow">Completed ${escapeHTML(formatDate(progress.completedAt))}</span>
-                  <h2>This quest is part of your garden.</h2>
+                  <h2>This task is part of your topic progress.</h2>
                   <p>You recorded ${progress.actualMinutes || "some"} minutes and confidence ${progress.confidenceAfter ?? "—"} of 4. Reopening it never removes your progress.</p>
                   ${progress.reflection ? `<blockquote>“${escapeHTML(progress.reflection)}”</blockquote>` : ""}
                 </div>
@@ -640,7 +845,7 @@
                 <div>
                   <strong>${
                     isActive
-                      ? "This is your active quest."
+                      ? "This is your active task."
                       : status === "stuck"
                         ? "You can return in one small step."
                         : "Ready when you are."
@@ -682,14 +887,98 @@
   }
 
   function questsView() {
+    const course = courseProgress();
     main.innerHTML = `
       <section class="page-heading">
-        <span class="soft-label">The course, in small pieces</span>
-        <h1>Quest paths</h1>
-        <p class="lead">Future paths can be seen, but only ready quests ask for your attention.</p>
+        <span class="soft-label">The complete syllabus at a glance</span>
+        <h1>Course topics</h1>
+        <p class="lead">See every official topic and subtopic in one place. Task results update this map automatically, or you can record your own understanding.</p>
       </section>
 
-      <div class="world-list">
+      <section class="global-progress-card" aria-labelledby="global-progress-heading">
+        <div class="global-progress-score">
+          <strong>${course.percent}%</strong>
+          <span>of subtopics understood</span>
+        </div>
+        <div>
+          <h2 id="global-progress-heading">Whole-course understanding</h2>
+          <div class="understanding-bar" role="img" aria-label="${course.counts.understood} understood, ${course.counts.unclear} unclear, ${course.counts.unchecked} unchecked">
+            <span class="bar-understood" style="width:${(course.counts.understood / course.total) * 100}%"></span>
+            <span class="bar-unclear" style="width:${(course.counts.unclear / course.total) * 100}%"></span>
+            <span class="bar-unchecked" style="width:${(course.counts.unchecked / course.total) * 100}%"></span>
+          </div>
+          <div class="understanding-counts">
+            <span class="understanding-understood"><strong>${course.counts.understood}</strong> Understood</span>
+            <span class="understanding-unclear"><strong>${course.counts.unclear}</strong> Unclear</span>
+            <span class="understanding-unchecked"><strong>${course.counts.unchecked}</strong> Unchecked</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="course-map" aria-labelledby="course-map-heading">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">15 syllabus topics · 30 subtopics</span>
+            <h2 id="course-map-heading">Your understanding map</h2>
+          </div>
+          <p class="map-help">“Automatic” follows saved task progress. Choose another value when your own assessment is more accurate.</p>
+        </div>
+        <div class="course-topic-grid">
+          ${app.courseTopics.map((courseTopic) => {
+            const topicStatus = courseTopicStatus(courseTopic);
+            return `
+              <article class="course-topic-card understanding-${topicStatus}">
+                <header>
+                  <div class="course-topic-number">${courseTopic.order}</div>
+                  <div>
+                    <p>${escapeHTML(courseTopic.section)}</p>
+                    <h3>${escapeHTML(courseTopic.title)}</h3>
+                  </div>
+                  <span class="understanding-pill understanding-${topicStatus}">${escapeHTML(understandingLabel(topicStatus))}</span>
+                </header>
+                <div class="subtopic-list">
+                  ${courseTopic.subtopics.map((subtopic) => {
+                    const status = subtopicStatus(subtopic);
+                    const manual = app.state.topicAssessments[subtopic.id] || "";
+                    return `
+                      <div class="subtopic-row">
+                        <div>
+                          <strong>${escapeHTML(subtopic.name)}</strong>
+                          <small>${subtopic.taskIds.length ? `${subtopic.taskIds.length} linked learning task${subtopic.taskIds.length === 1 ? "" : "s"}` : "No in-app task yet"}</small>
+                        </div>
+                        <label class="sr-only" for="status-${escapeHTML(subtopic.id)}">Understanding status for ${escapeHTML(subtopic.name)}</label>
+                        <select
+                          id="status-${escapeHTML(subtopic.id)}"
+                          class="understanding-select understanding-${status}"
+                          data-subtopic-status="${escapeHTML(subtopic.id)}"
+                        >
+                          <option value="" ${manual === "" ? "selected" : ""}>Automatic · ${escapeHTML(understandingLabel(status))}</option>
+                          <option value="understood" ${manual === "understood" ? "selected" : ""}>Understood</option>
+                          <option value="unclear" ${manual === "unclear" ? "selected" : ""}>Unclear</option>
+                          <option value="unchecked" ${manual === "unchecked" ? "selected" : ""}>Unchecked</option>
+                        </select>
+                      </div>
+                    `;
+                  }).join("")}
+                </div>
+                <a class="course-source-link" href="${escapeHTML(courseTopic.sourceUrl)}" target="_blank" rel="noopener noreferrer">
+                  Official topic page <span aria-hidden="true">↗</span>
+                </a>
+              </article>
+            `;
+          }).join("")}
+        </div>
+      </section>
+
+      <section class="available-tasks" aria-labelledby="available-tasks-heading">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Small practice activities</span>
+            <h2 id="available-tasks-heading">Available learning tasks</h2>
+          </div>
+          <p class="map-help">More topic tasks will be added in course order.</p>
+        </div>
+        <div class="world-list">
         ${app.worlds.map((world) => {
           const progress = worldProgress(world);
           return `
@@ -703,7 +992,7 @@
                 </div>
                 <div class="world-meter">
                   <strong>${progress.completed}/${progress.quests.length}</strong>
-                  <span>quests</span>
+                  <span>tasks</span>
                   <div class="mini-progress" role="progressbar" aria-label="${escapeHTML(world.name)} progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress.percent}">
                     <span style="width: ${progress.percent}%"></span>
                   </div>
@@ -715,28 +1004,30 @@
             </section>
           `;
         }).join("")}
-      </div>
+        </div>
+      </section>
       <div class="coming-soon">
         <span aria-hidden="true">⋯</span>
         <div>
-          <h2>More garden paths are being prepared.</h2>
-          <p>Objects, classes, inheritance, collections, streams, testing, and exam review will arrive after the first learning loop has been tested.</p>
+          <h2>More topic tasks are being prepared.</h2>
+          <p>The full course is visible above now. New practice tasks can be added without changing your understanding notes.</p>
         </div>
       </div>
     `;
   }
 
   function gardenStageInfo(count) {
-    if (count >= 9) return { stage: 4, name: "Festival bloom", message: "Every v0.1 path has flowers." };
-    if (count >= 6) return { stage: 3, name: "Sunflower", message: "Independent practice brought a flower." };
-    if (count >= 3) return { stage: 2, name: "Strong sprout", message: "Your first ideas are taking root." };
-    if (count >= 1) return { stage: 1, name: "New seedling", message: "A completed quest made the first shoot appear." };
-    return { stage: 0, name: "Resting seed", message: "The seed is ready. Nothing is late." };
+    if (count >= 25) return { stage: 4, name: "Course garden in bloom", message: "Most of the syllabus is flowering." };
+    if (count >= 15) return { stage: 3, name: "Strong course sunflower", message: "Understanding across the course brought a flower." };
+    if (count >= 5) return { stage: 2, name: "Growing course sprout", message: "Several understood subtopics are taking root." };
+    if (count >= 1) return { stage: 1, name: "First understanding seedling", message: "An understood subtopic made the first shoot appear." };
+    return { stage: 0, name: "Course seed at rest", message: "Unchecked and unclear soil is not failure. The seed is ready." };
   }
 
   function gardenView() {
     const complete = completedQuests();
-    const garden = gardenStageInfo(complete.length);
+    const course = courseProgress();
+    const garden = gardenStageInfo(course.counts.understood);
     const bossComplete = app.state.questProgress["arrays-boss-find-largest-v1"]?.status === "completed";
     const returnedFromStuck = Object.values(app.state.questProgress).some(
       (progress) => progress.returnedFromStuck
@@ -746,7 +1037,7 @@
       <section class="page-heading centered-heading">
         <span class="soft-label">A record of real study actions</span>
         <h1>${escapeHTML(app.state.profile.displayName)}’s garden</h1>
-        <p class="lead">This grows from quests, explanations, and returning after difficulty—not from daily streaks.</p>
+        <p class="lead">Each garden bed represents one official course topic. Understanding grows flowers; unclear areas stay as living sprouts; unchecked areas wait as seeds.</p>
       </section>
 
       <section class="garden-scene garden-stage-${garden.stage}" aria-labelledby="garden-stage-heading">
@@ -761,7 +1052,35 @@
         <div class="garden-caption">
           <span class="eyebrow">Current growth</span>
           <h2 id="garden-stage-heading">${escapeHTML(garden.name)}</h2>
-          <p>${escapeHTML(garden.message)}</p>
+          <p>${course.counts.understood}/${course.total} subtopics understood. ${escapeHTML(garden.message)}</p>
+        </div>
+      </section>
+
+      <section class="course-beds" aria-labelledby="course-beds-heading">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">The complete syllabus as a garden</span>
+            <h2 id="course-beds-heading">15 course beds</h2>
+          </div>
+          <button class="text-button" type="button" data-nav="quests">Update understanding <span aria-hidden="true">→</span></button>
+        </div>
+        <div class="course-bed-grid">
+          ${app.courseTopics.map((courseTopic) => {
+            const status = courseTopicStatus(courseTopic);
+            const understood = courseTopic.subtopics.filter(
+              (subtopic) => subtopicStatus(subtopic) === "understood"
+            ).length;
+            const icon = status === "understood" ? "🌻" : status === "unclear" ? "🌱" : "·";
+            return `
+              <article class="course-bed understanding-${status}">
+                <span class="bed-number">${courseTopic.order}</span>
+                <span class="bed-plant" aria-hidden="true">${icon}</span>
+                <h3>${escapeHTML(courseTopic.title)}</h3>
+                <p>${understood}/${courseTopic.subtopics.length} subtopics understood</p>
+                <span class="understanding-pill understanding-${status}">${escapeHTML(understandingLabel(status))}</span>
+              </article>
+            `;
+          }).join("")}
         </div>
       </section>
 
@@ -771,18 +1090,18 @@
             <span class="eyebrow">Garden keepsakes</span>
             <h2 id="rewards-heading">Things your work has grown</h2>
           </div>
-          <strong>${complete.length} / ${app.quests.length} quests</strong>
+          <strong>${complete.length} / ${app.quests.length} learning tasks</strong>
         </div>
         <div class="reward-grid">
           <article class="reward-card ${complete.length >= 1 ? "unlocked" : "locked"}">
             <span aria-hidden="true">🌱</span>
             <h3>First seedling</h3>
-            <p>Complete one quest</p>
+            <p>Complete one learning task</p>
           </article>
           <article class="reward-card ${complete.length >= 3 ? "unlocked" : "locked"}">
             <span aria-hidden="true">🌿</span>
             <h3>Brave sprout</h3>
-            <p>Complete three quests</p>
+            <p>Complete three learning tasks</p>
           </article>
           <article class="reward-card ${returnedFromStuck ? "unlocked" : "locked"}">
             <span aria-hidden="true">🍀</span>
@@ -792,7 +1111,7 @@
           <article class="reward-card ${bossComplete ? "unlocked" : "locked"}">
             <span aria-hidden="true">🌻</span>
             <h3>Boss sunflower</h3>
-            <p>Complete the array boss quest</p>
+            <p>Complete the array challenge task</p>
           </article>
         </div>
       </section>
@@ -824,7 +1143,7 @@
         <div>
           <span aria-hidden="true">?</span>
           <strong>${stuckItems.length}</strong>
-          <small>stuck quest${stuckItems.length === 1 ? "" : "s"}</small>
+          <small>stuck task${stuckItems.length === 1 ? "" : "s"}</small>
         </div>
         <div>
           <span aria-hidden="true">✎</span>
@@ -842,7 +1161,7 @@
         <div class="section-heading">
           <div>
             <span class="eyebrow">Ready to discuss</span>
-            <h2 id="stuck-heading">Stuck quests</h2>
+            <h2 id="stuck-heading">Stuck learning tasks</h2>
           </div>
         </div>
         ${
@@ -875,7 +1194,7 @@
                     </div>
                   </dl>
                   <button class="button button-secondary" type="button" data-open-quest="${escapeHTML(quest.id)}">
-                    Return to quest <span aria-hidden="true">→</span>
+                    Return to task <span aria-hidden="true">→</span>
                   </button>
                 </article>
               `).join("")}</div>`
@@ -883,7 +1202,7 @@
               <div class="empty-card">
                 <span class="empty-icon" aria-hidden="true">☁</span>
                 <h3>Nothing is waiting here.</h3>
-                <p>If a quest becomes confusing, “I’m stuck” will help you capture the exact point.</p>
+                <p>If a task becomes confusing, “I’m stuck” will help you capture the exact point.</p>
               </div>
             `
         }
@@ -944,7 +1263,7 @@
         <section class="settings-card storage-card">
           <span class="eyebrow">Where progress lives</span>
           <h2>This browser only</h2>
-          <p>Quest history, confidence, tutor notes, and XP are saved in this browser profile. Clearing site data removes them.</p>
+          <p>Topic-task history, confidence, tutor notes, and XP are saved in this browser profile. Clearing site data removes them.</p>
           <dl class="settings-details">
             <div><dt>Last saved</dt><dd>${escapeHTML(formatDate(app.state.lastSavedAt))}</dd></div>
             <div><dt>Storage status</dt><dd>${app.storageAvailable ? "Available" : "Temporary mode"}</dd></div>
@@ -999,7 +1318,7 @@
     };
     app.state.activeQuestId = questId;
     persist(true);
-    showToast(wasStuck ? "Welcome back. Returning is worth celebrating." : "Quest started. There is no countdown.");
+    showToast(wasStuck ? "Welcome back. Returning is worth celebrating." : "Task started. There is no countdown.");
     navigate("quest", questId, { focus: false });
   }
 
@@ -1007,7 +1326,7 @@
     if (app.state.activeQuestId === questId) {
       app.state.activeQuestId = null;
       persist(true);
-      showToast("Quest paused. It will wait without penalty.");
+      showToast("Task paused. It will wait without penalty.");
       navigate("home");
     }
   }
@@ -1149,7 +1468,17 @@
   }
 
   function handleMainChange(event) {
-    if (event.target.id === "duration-preference") {
+    if (event.target.matches("[data-subtopic-status]")) {
+      const subtopicId = event.target.dataset.subtopicStatus;
+      if (event.target.value) {
+        app.state.topicAssessments[subtopicId] = event.target.value;
+      } else {
+        delete app.state.topicAssessments[subtopicId];
+      }
+      persist(true);
+      questsView();
+      showToast("Topic understanding updated.");
+    } else if (event.target.id === "duration-preference") {
       app.state.preferences.duration = event.target.value;
       app.recommendationOffset = 0;
       persist(true);
@@ -1167,12 +1496,51 @@
 
   function handleMainSubmit(event) {
     event.preventDefault();
-    if (event.target.id === "welcome-form") {
+    if (event.target.classList.contains("qa-form")) {
+      const taskId = event.target.dataset.taskId;
+      const questionId = event.target.dataset.questionId;
+      const quest = questById(taskId);
+      const question = quest?.questions?.find((item) => item.id === questionId);
+      const selected = new FormData(event.target).get("answer");
+      const feedback = event.target.querySelector(".qa-feedback");
+      if (!selected) {
+        feedback.className = "qa-feedback qa-incorrect";
+        feedback.textContent = "Choose one answer before checking.";
+        return;
+      }
+
+      const isCorrect = selected === question.correctOptionId;
+      const progress = progressFor(taskId);
+      const previousAnswer = progress.quizAnswers?.[questionId];
+      app.state.questProgress[taskId] = {
+        ...progress,
+        questId: taskId,
+        quizAnswers: {
+          ...(progress.quizAnswers || {}),
+          [questionId]: {
+            selectedOptionId: selected,
+            isCorrect,
+            attempts: (previousAnswer?.attempts || 0) + 1,
+            answeredAt: new Date().toISOString()
+          }
+        }
+      };
+      persist(true);
+      event.target.classList.remove("qa-answer-correct", "qa-answer-incorrect");
+      event.target.classList.add(
+        isCorrect ? "qa-answer-correct" : "qa-answer-incorrect"
+      );
+      feedback.className = `qa-feedback ${isCorrect ? "qa-correct" : "qa-incorrect"}`;
+      feedback.textContent = isCorrect
+        ? question.correctExplanation
+        : question.incorrectExplanation;
+      showToast(isCorrect ? "Correct — that idea is taking root." : "Not quite yet. The explanation is a useful clue.");
+    } else if (event.target.id === "welcome-form") {
       const name = document.getElementById("display-name").value.trim();
       if (!name) return;
       app.state.profile = {
         displayName: name.slice(0, 32),
-        mascot: "momo-bunny",
+        mascot: "tintinsito-bunny",
         theme: "pastel-garden",
         createdAt: new Date().toISOString()
       };
@@ -1223,7 +1591,7 @@
       persist(true);
       document.getElementById("stuck-dialog").close();
       navigate("tutor");
-      showToast("Saved to Tutor Corner. Getting stuck is part of the quest.");
+      showToast("Saved to Tutor Corner. Getting stuck is part of the task.");
     });
 
     document.getElementById("complete-form").addEventListener("submit", (event) => {
@@ -1285,13 +1653,15 @@
   async function init() {
     bindEvents();
     try {
-      const [worlds, quests] = await Promise.all([
+      const [courseTopics, worlds, quests] = await Promise.all([
+        loadJSON("./data/course-topics.json"),
         loadJSON("./data/worlds.json"),
         loadJSON("./data/quests.json")
       ]);
-      validateContent(worlds, quests);
+      validateContent(courseTopics, worlds, quests);
 
       const worldOrders = new Map(worlds.map((world) => [world.id, world.order]));
+      app.courseTopics = courseTopics.slice().sort((a, b) => a.order - b.order);
       app.worlds = worlds.slice().sort((a, b) => a.order - b.order);
       app.quests = quests
         .map((quest) => ({
@@ -1321,13 +1691,13 @@
       console.error(error);
       setNotice(
         appError,
-        "The garden could not load its quest library. Please refresh the page. If this keeps happening, share the page link with the person who maintains it."
+        "The garden could not load its topic library. Please refresh the page. If this keeps happening, share the page link with the person who maintains it."
       );
       main.innerHTML = `
         <section class="fatal-card">
-          <img src="./assets/momo.svg" alt="" width="100" height="100">
+          <img src="./assets/tintinsito.svg" alt="" width="100" height="100">
           <h1>The garden gate is stuck.</h1>
-          <p>Your browser did nothing wrong. The quest files could not be opened.</p>
+          <p>Your browser did nothing wrong. The topic files could not be opened.</p>
           <button class="button button-primary" type="button" onclick="window.location.reload()">Try again</button>
         </section>
       `;

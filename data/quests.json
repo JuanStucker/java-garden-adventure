@@ -1,0 +1,308 @@
+[
+  {
+    "id": "hello-discover-tool-check-v1",
+    "worldId": "world-01",
+    "order": 1,
+    "topic": "Hello World",
+    "title": "Open the Garden Gate",
+    "type": "discover",
+    "energy": "low",
+    "difficulty": 1,
+    "estimatedMinutes": 10,
+    "xp": 10,
+    "prerequisites": [],
+    "description": "Check that your Java tools are ready without trying to learn everything at once.",
+    "instructions": [
+      "Open a terminal and run java --version.",
+      "Open the editor you plan to use for the course.",
+      "Create a folder where your small Java programs can live.",
+      "Write down one setup question if anything is unclear."
+    ],
+    "evidenceChecks": [
+      "I saw a Java version in the terminal.",
+      "I know where I will save my Java files."
+    ],
+    "minEvidence": 1,
+    "hints": [
+      "This is only a readiness check. You do not need to configure every editor feature.",
+      "If the terminal cannot find Java, note the exact message for a tutor or the course setup guide.",
+      "The course expects a JDK, not only a JRE. The JDK includes tools used to compile programs.",
+      "It is completely valid to finish this quest as stuck and bring the saved error to Tutor Corner."
+    ],
+    "mascotMessage": "A clear setup question is progress too.",
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w1/"
+  },
+  {
+    "id": "hello-guided-run-program-v1",
+    "worldId": "world-01",
+    "order": 2,
+    "topic": "Hello World",
+    "title": "Wake Up a Tiny Program",
+    "type": "guided",
+    "energy": "medium",
+    "difficulty": 1,
+    "estimatedMinutes": 20,
+    "xp": 15,
+    "prerequisites": ["hello-discover-tool-check-v1"],
+    "description": "Type, compile, and run a small Java program yourself.",
+    "instructions": [
+      "Create a file named HelloGarden.java.",
+      "Type a class named HelloGarden with a public static void main method.",
+      "Inside main, print: Hello, garden!",
+      "Compile the file and run the program.",
+      "Change the message, then compile and run it once more."
+    ],
+    "evidenceChecks": [
+      "I typed the program rather than pasting it.",
+      "I changed the output and saw my new message."
+    ],
+    "minEvidence": 1,
+    "hints": [
+      "Java file names and public class names need to match exactly, including capital letters.",
+      "The output line begins with System.out.println and the message belongs inside quotation marks.",
+      "Compile with javac HelloGarden.java, then run with java HelloGarden.",
+      "If an error points to a line, first check spelling, quotation marks, parentheses, braces, and semicolons."
+    ],
+    "mascotMessage": "Typing it yourself helps your hands learn the shape of Java.",
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w1/"
+  },
+  {
+    "id": "hello-make-condition-v1",
+    "worldId": "world-01",
+    "order": 3,
+    "topic": "Floating-point numbers and conditionals",
+    "title": "Choose a Weather Path",
+    "type": "make-it-yours",
+    "energy": "medium",
+    "difficulty": 2,
+    "estimatedMinutes": 20,
+    "xp": 20,
+    "prerequisites": ["hello-guided-run-program-v1"],
+    "description": "Change values and conditions to make a program choose between two messages.",
+    "instructions": [
+      "Create a double variable named temperature and give it a value.",
+      "Use if and else to print Warm path when temperature is at least 20.0, otherwise print Cosy path.",
+      "Run the program once with a value below 20.0 and once with a value above it.",
+      "Try exactly 20.0 and predict the message before running."
+    ],
+    "evidenceChecks": [
+      "I tested both branches of the condition.",
+      "I predicted what would happen at exactly 20.0."
+    ],
+    "minEvidence": 1,
+    "hints": [
+      "A condition is a question whose answer is true or false.",
+      "The comparison for “at least” is written >=.",
+      "The if branch uses braces, followed by else and another pair of braces.",
+      "If 20.0 should take the warm path, make sure the equality part of >= is present."
+    ],
+    "mascotMessage": "Testing the edge value is how careful programmers learn what a condition really says.",
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w1/"
+  },
+  {
+    "id": "loops-discover-trace-v1",
+    "worldId": "world-02",
+    "order": 1,
+    "topic": "Booleans and loops",
+    "title": "Trace the Lily Pads",
+    "type": "discover",
+    "energy": "low",
+    "difficulty": 1,
+    "estimatedMinutes": 10,
+    "xp": 10,
+    "prerequisites": ["hello-make-condition-v1"],
+    "description": "Predict a loop one step at a time before asking Java for the answer.",
+    "instructions": [
+      "On paper, write the values 0, 1, 2, and 3 in a column.",
+      "Imagine a loop that starts i at 0, continues while i < 4, and increases i by 1.",
+      "Beside each value, write whether i < 4 is true or false.",
+      "Write the values you expect the loop to print, then check with a tiny program."
+    ],
+    "evidenceChecks": [
+      "I traced the condition before running the code.",
+      "I can say why 4 is not printed."
+    ],
+    "minEvidence": 1,
+    "hints": [
+      "Check the condition before each trip through the loop.",
+      "The comparison i < 4 does not include 4.",
+      "After printing 3, i becomes 4 and the condition is checked again.",
+      "A useful trace table has columns for i, the condition result, and the printed output."
+    ],
+    "mascotMessage": "A pencil trace can make a fast loop slow enough to see.",
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w2/"
+  },
+  {
+    "id": "loops-guided-countdown-v1",
+    "worldId": "world-02",
+    "order": 2,
+    "topic": "Loops",
+    "title": "Build a Gentle Countdown",
+    "type": "guided",
+    "energy": "medium",
+    "difficulty": 2,
+    "estimatedMinutes": 20,
+    "xp": 15,
+    "prerequisites": ["loops-discover-trace-v1"],
+    "description": "Write a loop, then change its direction and stopping point.",
+    "instructions": [
+      "Write a for loop that prints the integers 1 through 5.",
+      "Change it so it prints 5 down to 1.",
+      "Add Garden ready! after the loop.",
+      "Before running, identify the start, condition, and update parts."
+    ],
+    "evidenceChecks": [
+      "My countdown prints each intended number once.",
+      "I can point to the loop’s start, condition, and update."
+    ],
+    "minEvidence": 1,
+    "hints": [
+      "A for loop keeps its start, continuation condition, and update inside the parentheses.",
+      "For a countdown, start at 5 and subtract 1 after each round.",
+      "The countdown should continue while the value is greater than or equal to 1.",
+      "If it never stops, check whether the update moves the value toward making the condition false."
+    ],
+    "mascotMessage": "Loops feel safer when you can name their three moving parts.",
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w2/"
+  },
+  {
+    "id": "methods-solo-temperature-v1",
+    "worldId": "world-02",
+    "order": 3,
+    "topic": "Methods",
+    "title": "Name a Reusable Idea",
+    "type": "solo",
+    "energy": "high",
+    "difficulty": 3,
+    "estimatedMinutes": 30,
+    "xp": 30,
+    "prerequisites": ["loops-guided-countdown-v1"],
+    "description": "Create a method that turns a temperature into a short description.",
+    "instructions": [
+      "Write a static method named weatherNote that receives one double value.",
+      "Make it return Warm when the value is at least 20.0 and Cosy otherwise.",
+      "Call the method from main with three different values and print each result.",
+      "Add one call using exactly 20.0."
+    ],
+    "evidenceChecks": [
+      "My method uses its parameter rather than a fixed value.",
+      "My method returns a String for both possible paths.",
+      "I called the method with more than one value."
+    ],
+    "minEvidence": 2,
+    "hints": [
+      "A method header needs a return type, a name, and a parameter list.",
+      "The return type is String and the parameter can be double temperature.",
+      "Both the if and else paths need to return a value.",
+      "Start with: static String weatherNote(double temperature) { … }"
+    ],
+    "mascotMessage": "Giving an idea a good method name is a small act of kindness for future you.",
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w2/"
+  },
+  {
+    "id": "loops-teach-condition-v1",
+    "worldId": "world-02",
+    "order": 4,
+    "topic": "Loops and Methods",
+    "title": "Teach Momo When a Loop Stops",
+    "type": "teach",
+    "energy": "low",
+    "difficulty": 2,
+    "estimatedMinutes": 10,
+    "xp": 15,
+    "prerequisites": ["loops-guided-countdown-v1"],
+    "description": "Explain a loop in plain language and uncover any fuzzy parts.",
+    "instructions": [
+      "Choose one loop you wrote recently.",
+      "Explain to Momo what is true before the first iteration.",
+      "Explain what changes during one iteration.",
+      "Finish this sentence: The loop stops because…",
+      "Name one change that could accidentally make the loop continue forever."
+    ],
+    "evidenceChecks": [
+      "I explained the stopping condition without reading a definition.",
+      "I named a possible infinite-loop mistake."
+    ],
+    "minEvidence": 1,
+    "hints": [
+      "Plain language is the goal; you do not need special terminology.",
+      "Ask which variable changes and which comparison eventually becomes false.",
+      "If the important variable never changes, the condition may stay true forever.",
+      "Try drawing one arrow from the update back to the condition."
+    ],
+    "mascotMessage": "If you can explain where a loop stops, you are no longer just following its shape.",
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w2/"
+  },
+  {
+    "id": "arrays-guided-index-v1",
+    "worldId": "world-03",
+    "order": 1,
+    "topic": "Stack, Heap and Arrays",
+    "title": "Meet the Array Family",
+    "type": "guided",
+    "energy": "medium",
+    "difficulty": 2,
+    "estimatedMinutes": 20,
+    "xp": 15,
+    "prerequisites": [
+      "methods-solo-temperature-v1",
+      "loops-teach-condition-v1"
+    ],
+    "description": "Store several values together and visit them safely by index.",
+    "instructions": [
+      "Create an int array containing 6, 7, 4, and 3.",
+      "Print the first and last values using their indices.",
+      "Use an enhanced for loop to print every value.",
+      "Use a normal for loop with the array length to print every value again.",
+      "Predict what would happen if you tried to read index 4, but do not add that line to your final program."
+    ],
+    "evidenceChecks": [
+      "I know the first and last valid indices for this array.",
+      "Both loop versions print all four values."
+    ],
+    "minEvidence": 1,
+    "hints": [
+      "An array with four items has a length of 4, but its first index is 0.",
+      "The last valid index is always length - 1.",
+      "A safe indexed loop usually continues while i < values.length.",
+      "Trying index 4 in this four-item array causes an ArrayIndexOutOfBoundsException."
+    ],
+    "mascotMessage": "Array positions begin at zero; the length still tells you how many values there are.",
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w3/"
+  },
+  {
+    "id": "arrays-boss-find-largest-v1",
+    "worldId": "world-03",
+    "order": 2,
+    "topic": "Arrays",
+    "title": "Find the Tallest Sunflower",
+    "type": "boss",
+    "energy": "high",
+    "difficulty": 3,
+    "estimatedMinutes": 45,
+    "xp": 50,
+    "prerequisites": ["arrays-guided-index-v1"],
+    "description": "Write a small method that searches an array for its largest value.",
+    "instructions": [
+      "Write a static method named findLargest that receives an int array and returns an int.",
+      "Start with the first array value as the largest value seen so far.",
+      "Visit the remaining values and replace the saved value whenever you find a larger one.",
+      "Test with {6, 7, 4, 3}, {-8, -2, -11}, and a one-item array.",
+      "Explain why starting with 0 would give a wrong answer for some arrays."
+    ],
+    "evidenceChecks": [
+      "My method returns 7, -2, and the one item for the three tests.",
+      "I used the array data rather than 0 as the initial largest value.",
+      "I can explain how the loop maintains the largest value seen so far."
+    ],
+    "minEvidence": 2,
+    "hints": [
+      "Solve only one piece at a time: method header, initial value, loop, comparison, return.",
+      "The first array item is a safer initial answer than 0 because all values might be negative.",
+      "The loop can begin at index 1 because index 0 is already stored as the current largest.",
+      "Partial shape: int largest = values[0]; then loop from 1, compare values[i] with largest, and return largest."
+    ],
+    "mascotMessage": "A boss quest is a place to notice what you know—not a verdict on you.",
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w3/"
+  }
+]

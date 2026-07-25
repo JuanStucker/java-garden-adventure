@@ -56,7 +56,7 @@
     const profile = loadedProfile
       ? {
           ...loadedProfile,
-          mascot: "tintinsito-bunny"
+          mascot: "tintinsito-dog"
         }
       : null;
 

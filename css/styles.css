@@ -664,19 +664,45 @@ textarea:focus {
   filter: drop-shadow(0 12px 12px rgba(73, 58, 52, 0.2));
 }
 
-.hero-illustration p {
+.joke-bubble {
   position: absolute;
   top: 9%;
   right: 6%;
   z-index: 2;
   max-width: 190px;
   padding: 0.7rem 0.9rem;
+  border: 0;
   border-radius: 16px 16px 4px 16px;
   background: rgba(255, 255, 255, 0.93);
   box-shadow: var(--shadow-sm);
   color: var(--ink-700);
   font-family: var(--font-display);
   font-size: 0.88rem;
+  font-weight: 800;
+  text-align: left;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.joke-bubble:hover {
+  transform: translateY(-2px) rotate(-1deg);
+  box-shadow: var(--shadow-md);
+}
+
+.joke-bubble:focus-visible {
+  outline: 3px solid var(--sage-500);
+  outline-offset: 3px;
+}
+
+.joke-bubble > span {
+  display: block;
+}
+
+.joke-bubble small {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--sage-700);
+  font-family: var(--font-body);
+  font-size: 0.68rem;
   font-weight: 800;
 }
 
@@ -2657,7 +2683,7 @@ dialog::backdrop {
     width: 105px;
   }
 
-  .hero-illustration p {
+  .joke-bubble {
     max-width: 165px;
     font-size: 0.78rem;
   }

@@ -43,6 +43,19 @@
     "Garden Guide"
   ];
 
+  const tintinsitoJokes = [
+    "One step closer to being a hacker.",
+    "The front-end queen came back.",
+    "Automation expert on sight!",
+    "Java today, world domination tomorrow.",
+    "The compiler has been warned.",
+    "Bug whisperer entering the garden.",
+    "Main-character energy, now with semicolons.",
+    "Another day, another suspiciously elegant loop.",
+    "CEO of making it work somehow.",
+    "Tintinsito says: ship it, queen."
+  ];
+
   const app = {
     courseTopics: [],
     worlds: [],
@@ -53,7 +66,8 @@
     currentQuestId: null,
     recommendationOffset: 0,
     revealedHints: {},
-    celebration: null
+    celebration: null,
+    jokeIndex: Math.floor(Math.random() * tintinsitoJokes.length)
   };
 
   function escapeHTML(value) {
@@ -409,7 +423,7 @@
         <div class="onboarding-card">
           <div class="mascot-introduction">
             <span class="sparkle sparkle-one" aria-hidden="true">✦</span>
-            <img src="./assets/tintinsito.svg" alt="Tintinsito the bunny" width="150" height="150">
+            <img src="./assets/tintinsito.svg" alt="Tintinsito the fluffy white dog" width="150" height="150">
             <span class="sparkle sparkle-two" aria-hidden="true">✦</span>
           </div>
           <span class="eyebrow">Meet your garden guide</span>
@@ -609,8 +623,16 @@
         </div>
         <div class="hero-illustration">
           <img class="garden-backdrop" src="./assets/garden.svg" alt="">
-          <img class="hero-tintinsito" src="./assets/tintinsito.svg" alt="Tintinsito the bunny" width="130" height="130">
-          <p>“${complete.length ? "You came back. That counts." : "One tiny step is enough."}”</p>
+          <img class="hero-tintinsito" src="./assets/tintinsito.svg" alt="Tintinsito the fluffy white dog" width="130" height="130">
+          <button
+            class="joke-bubble"
+            type="button"
+            data-action="another-joke"
+            aria-label="Show another Tintinsito joke"
+          >
+            <span>“${escapeHTML(tintinsitoJokes[app.jokeIndex])}”</span>
+            <small>Another one <span aria-hidden="true">↻</span></small>
+          </button>
         </div>
       </section>
 
@@ -1442,6 +1464,9 @@
     if (action === "show-another") {
       app.recommendationOffset += 1;
       homeView();
+    } else if (action === "another-joke") {
+      app.jokeIndex = (app.jokeIndex + 1) % tintinsitoJokes.length;
+      homeView();
     } else if (action === "dismiss-celebration") {
       app.celebration = null;
       homeView();
@@ -1540,7 +1565,7 @@
       if (!name) return;
       app.state.profile = {
         displayName: name.slice(0, 32),
-        mascot: "tintinsito-bunny",
+        mascot: "tintinsito-dog",
         theme: "pastel-garden",
         createdAt: new Date().toISOString()
       };

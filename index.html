@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Java Garden Adventure turns beginner Java topics into small, gentle learning quests."
+    >
+    <meta name="theme-color" content="#fff9f0">
+    <title>Java Garden Adventure</title>
+    <link rel="icon" href="./assets/momo.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="./js/storage.js" defer></script>
+    <script src="./js/recommendations.js" defer></script>
+    <script src="./js/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#app-main">Skip to the adventure</a>
+
+    <div class="site-shell">
+      <header class="site-header" id="site-header">
+        <button class="brand" type="button" data-nav="home" aria-label="Go to home">
+          <img src="./assets/momo.svg" alt="" width="52" height="52">
+          <span>
+            <span class="brand-kicker">Java Garden</span>
+            <span class="brand-name">Adventure</span>
+          </span>
+        </button>
+
+        <div class="header-progress" id="header-progress" hidden>
+          <div>
+            <span class="eyebrow">Your growing power</span>
+            <strong id="header-level">Curious Seed · Level 1</strong>
+          </div>
+          <div
+            class="mini-progress"
+            role="progressbar"
+            aria-label="Progress to next level"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <span id="header-progress-bar"></span>
+          </div>
+          <span class="xp-pill" id="header-xp">0 XP</span>
+        </div>
+      </header>
+
+      <div class="notice notice-warning" id="storage-notice" role="status" hidden></div>
+      <div class="notice notice-error" id="app-error" role="alert" hidden></div>
+
+      <nav class="primary-nav" id="primary-nav" aria-label="Main navigation" hidden>
+        <button type="button" data-nav="home" aria-current="page">
+          <span aria-hidden="true">⌂</span>
+          <span>Home</span>
+        </button>
+        <button type="button" data-nav="quests">
+          <span aria-hidden="true">✦</span>
+          <span>Quests</span>
+        </button>
+        <button type="button" data-nav="garden">
+          <span aria-hidden="true">❀</span>
+          <span>Garden</span>
+        </button>
+        <button type="button" data-nav="tutor">
+          <span aria-hidden="true">?</span>
+          <span>Tutor</span>
+        </button>
+        <button type="button" data-nav="settings">
+          <span aria-hidden="true">⚙</span>
+          <span>Settings</span>
+        </button>
+      </nav>
+
+      <main id="app-main" tabindex="-1">
+        <section class="loading-state" aria-live="polite">
+          <img src="./assets/momo.svg" alt="" width="88" height="88">
+          <p>Momo is opening the garden gate…</p>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>One tiny step is enough.</p>
+        <p>Your progress stays in this browser.</p>
+      </footer>
+    </div>
+
+    <dialog class="dialog-card" id="stuck-dialog" aria-labelledby="stuck-title">
+      <form id="stuck-form">
+        <div class="dialog-heading">
+          <div>
+            <span class="eyebrow">This is useful information</span>
+            <h2 id="stuck-title">Let’s make the stuck point visible</h2>
+          </div>
+          <button class="icon-button" type="button" data-close-dialog="stuck-dialog">
+            <span class="sr-only">Close</span>
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <input type="hidden" id="stuck-quest-id">
+        <label for="stuck-begin">Where did it start feeling difficult?</label>
+        <textarea id="stuck-begin" rows="2" placeholder="For example: I was not sure what the loop condition meant."></textarea>
+
+        <label for="stuck-tried">What have you already tried?</label>
+        <textarea id="stuck-tried" rows="2" placeholder="Small attempts count."></textarea>
+
+        <label for="stuck-error">Did Java show an error message?</label>
+        <textarea id="stuck-error" rows="2" placeholder="You can paste the relevant line here."></textarea>
+
+        <label for="stuck-question">What would you like to ask a tutor?</label>
+        <textarea id="stuck-question" rows="2" placeholder="Help me understand…"></textarea>
+
+        <div class="dialog-actions">
+          <button class="button button-quiet" type="button" data-close-dialog="stuck-dialog">Keep working</button>
+          <button class="button button-primary" type="submit">Save for Tutor Corner</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="dialog-card" id="complete-dialog" aria-labelledby="complete-title">
+      <form id="complete-form">
+        <div class="dialog-heading">
+          <div>
+            <span class="eyebrow">Quest reflection</span>
+            <h2 id="complete-title">What changed while you worked?</h2>
+          </div>
+          <button class="icon-button" type="button" data-close-dialog="complete-dialog">
+            <span class="sr-only">Close</span>
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <input type="hidden" id="complete-quest-id">
+
+        <div class="form-grid">
+          <div>
+            <label for="actual-minutes">About how long did it take?</label>
+            <div class="input-with-suffix">
+              <input id="actual-minutes" type="number" min="1" max="480" required>
+              <span>minutes</span>
+            </div>
+          </div>
+          <div>
+            <label for="confidence-before">Confidence before</label>
+            <select id="confidence-before" required></select>
+          </div>
+          <div>
+            <label for="confidence-after">Confidence now</label>
+            <select id="confidence-after" required></select>
+          </div>
+        </div>
+
+        <fieldset class="evidence-fieldset">
+          <legend>What evidence do you have?</legend>
+          <p class="field-help" id="evidence-help">Choose at least one honest statement.</p>
+          <div id="completion-evidence"></div>
+        </fieldset>
+
+        <label for="completion-reflection">A note for future you <span class="optional">(optional)</span></label>
+        <textarea id="completion-reflection" rows="2" placeholder="What clicked, or what would you try differently?"></textarea>
+
+        <label class="check-row">
+          <input id="tutor-help-used" type="checkbox">
+          <span>I used help from a tutor, friend, or solution.</span>
+        </label>
+
+        <p class="form-error" id="complete-error" role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button class="button button-quiet" type="button" data-close-dialog="complete-dialog">Not yet</button>
+          <button class="button button-primary" type="submit">Complete quest</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="dialog-card dialog-small" id="reset-dialog" aria-labelledby="reset-title">
+      <form id="reset-form">
+        <div class="dialog-heading">
+          <div>
+            <span class="eyebrow">Please pause here</span>
+            <h2 id="reset-title">Reset all garden progress?</h2>
+          </div>
+          <button class="icon-button" type="button" data-close-dialog="reset-dialog">
+            <span class="sr-only">Close</span>
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <p>This removes your name, quest history, tutor notes, XP, and garden growth from this browser.</p>
+        <p>Backup export is coming in the next update. Do not reset if you want to keep this progress.</p>
+        <label class="check-row danger-check">
+          <input id="confirm-reset" type="checkbox">
+          <span>I understand that this browser’s progress will be removed.</span>
+        </label>
+        <p class="form-error" id="reset-error" role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button class="button button-quiet" type="button" data-close-dialog="reset-dialog">Keep my garden</button>
+          <button class="button button-danger" type="submit">Reset progress</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <noscript>
+      <div class="noscript-message">
+        Java Garden Adventure needs JavaScript to remember progress and recommend quests.
+        Please enable JavaScript and reload the page.
+      </div>
+    </noscript>
+  </body>
+</html>

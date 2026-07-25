@@ -1,0 +1,32 @@
+[
+  {
+    "id": "world-01",
+    "order": 1,
+    "name": "Hello Garden",
+    "officialTopic": "Hello World",
+    "description": "Set up your tools, meet Java, and make your first decisions in code.",
+    "accent": "peach",
+    "symbol": "🌱",
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w1/"
+  },
+  {
+    "id": "world-02",
+    "order": 2,
+    "name": "Loop Lagoon",
+    "officialTopic": "Loops and Methods",
+    "description": "Repeat useful actions and give reusable ideas clear names.",
+    "accent": "blue",
+    "symbol": "🪷",
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w2/"
+  },
+  {
+    "id": "world-03",
+    "order": 3,
+    "name": "Memory Meadow",
+    "officialTopic": "Stack, Heap and Arrays",
+    "description": "Trace where values live and organise several values together.",
+    "accent": "lavender",
+    "symbol": "🌼",
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w3/"
+  }
+]

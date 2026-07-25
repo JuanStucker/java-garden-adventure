@@ -27,7 +27,30 @@
       "This is only a readiness check. You do not need to configure every editor feature.",
       "If the terminal cannot find Java, note the exact message for a tutor or the course setup guide.",
       "The course expects a JDK, not only a JRE. The JDK includes tools used to compile programs.",
-      "It is completely valid to finish this quest as stuck and bring the saved error to Tutor Corner."
+      "It is completely valid to finish this task as stuck and bring the saved error to Tutor Corner."
+    ],
+    "questions": [
+      {
+        "id": "setup-jdk-toolset",
+        "prompt": "Which Java toolset includes the javac compiler needed to compile source files?",
+        "options": [
+          {
+            "id": "jdk",
+            "text": "JDK"
+          },
+          {
+            "id": "jre-only",
+            "text": "JRE only"
+          },
+          {
+            "id": "browser",
+            "text": "The web browser"
+          }
+        ],
+        "correctOptionId": "jdk",
+        "correctExplanation": "Correct. The Java Development Kit (JDK) includes javac and the tools needed to develop Java programs.",
+        "incorrectExplanation": "Not quite. The compiler is part of the Java Development Kit (JDK), not a browser or a runtime-only installation."
+      }
     ],
     "mascotMessage": "A clear setup question is progress too.",
     "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w1/"
@@ -63,6 +86,29 @@
       "Compile with javac HelloGarden.java, then run with java HelloGarden.",
       "If an error points to a line, first check spelling, quotation marks, parentheses, braces, and semicolons."
     ],
+    "questions": [
+      {
+        "id": "hello-compile-command",
+        "prompt": "Which command compiles HelloGarden.java into Java bytecode?",
+        "options": [
+          {
+            "id": "run-source",
+            "text": "java HelloGarden.java"
+          },
+          {
+            "id": "compile-source",
+            "text": "javac HelloGarden.java"
+          },
+          {
+            "id": "run-class",
+            "text": "java HelloGarden"
+          }
+        ],
+        "correctOptionId": "compile-source",
+        "correctExplanation": "Correct. javac is the Java compiler; it turns the source file into a .class file.",
+        "incorrectExplanation": "Not quite. javac compiles the .java source file. The java command runs a compiled class."
+      }
+    ],
     "mascotMessage": "Typing it yourself helps your hands learn the shape of Java.",
     "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w1/"
   },
@@ -96,6 +142,29 @@
       "The if branch uses braces, followed by else and another pair of braces.",
       "If 20.0 should take the warm path, make sure the equality part of >= is present."
     ],
+    "questions": [
+      {
+        "id": "condition-at-least",
+        "prompt": "Which expression is true when temperature is exactly 20.0 or higher?",
+        "options": [
+          {
+            "id": "greater-only",
+            "text": "temperature > 20.0"
+          },
+          {
+            "id": "at-least",
+            "text": "temperature >= 20.0"
+          },
+          {
+            "id": "equal-text",
+            "text": "temperature = 20.0"
+          }
+        ],
+        "correctOptionId": "at-least",
+        "correctExplanation": "Correct. >= includes the boundary value 20.0 as well as larger values.",
+        "incorrectExplanation": "Not quite. “At least” includes equality, so the comparison needs >=."
+      }
+    ],
     "mascotMessage": "Testing the edge value is how careful programmers learn what a condition really says.",
     "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w1/"
   },
@@ -128,6 +197,29 @@
       "The comparison i < 4 does not include 4.",
       "After printing 3, i becomes 4 and the condition is checked again.",
       "A useful trace table has columns for i, the condition result, and the printed output."
+    ],
+    "questions": [
+      {
+        "id": "loop-trace-output",
+        "prompt": "What does a loop print when it starts with i = 0, continues while i < 4, and prints i before increasing it?",
+        "options": [
+          {
+            "id": "zero-through-three",
+            "text": "0, 1, 2, 3"
+          },
+          {
+            "id": "one-through-four",
+            "text": "1, 2, 3, 4"
+          },
+          {
+            "id": "zero-through-four",
+            "text": "0, 1, 2, 3, 4"
+          }
+        ],
+        "correctOptionId": "zero-through-three",
+        "correctExplanation": "Correct. The loop prints 0 through 3; when i becomes 4, i < 4 is false.",
+        "incorrectExplanation": "Not quite. The condition is checked before printing, and 4 < 4 is false."
+      }
     ],
     "mascotMessage": "A pencil trace can make a fast loop slow enough to see.",
     "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w2/"
@@ -204,7 +296,7 @@
     "worldId": "world-02",
     "order": 4,
     "topic": "Loops and Methods",
-    "title": "Teach Momo When a Loop Stops",
+    "title": "Teach Tintinsito When a Loop Stops",
     "type": "teach",
     "energy": "low",
     "difficulty": 2,
@@ -214,7 +306,7 @@
     "description": "Explain a loop in plain language and uncover any fuzzy parts.",
     "instructions": [
       "Choose one loop you wrote recently.",
-      "Explain to Momo what is true before the first iteration.",
+      "Explain to Tintinsito what is true before the first iteration.",
       "Explain what changes during one iteration.",
       "Finish this sentence: The loop stops because…",
       "Name one change that could accidentally make the loop continue forever."
@@ -267,6 +359,29 @@
       "A safe indexed loop usually continues while i < values.length.",
       "Trying index 4 in this four-item array causes an ArrayIndexOutOfBoundsException."
     ],
+    "questions": [
+      {
+        "id": "array-last-index",
+        "prompt": "An array has length 4. What is its last valid index?",
+        "options": [
+          {
+            "id": "index-three",
+            "text": "3"
+          },
+          {
+            "id": "index-four",
+            "text": "4"
+          },
+          {
+            "id": "depends-values",
+            "text": "It depends on the stored values"
+          }
+        ],
+        "correctOptionId": "index-three",
+        "correctExplanation": "Correct. Indexing begins at 0, so the last valid index is length - 1, which is 3.",
+        "incorrectExplanation": "Not quite. Four items use indices 0, 1, 2, and 3. The last index is length - 1."
+      }
+    ],
     "mascotMessage": "Array positions begin at zero; the length still tells you how many values there are.",
     "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w3/"
   },
@@ -302,7 +417,7 @@
       "The loop can begin at index 1 because index 0 is already stored as the current largest.",
       "Partial shape: int largest = values[0]; then loop from 1, compare values[i] with largest, and return largest."
     ],
-    "mascotMessage": "A boss quest is a place to notice what you know—not a verdict on you.",
+    "mascotMessage": "A challenge task is a place to notice what you know—not a verdict on you.",
     "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w3/"
   }
 ]

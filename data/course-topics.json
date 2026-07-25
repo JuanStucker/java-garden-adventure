@@ -1,0 +1,297 @@
+[
+  {
+    "id": "course-topic-01",
+    "order": 1,
+    "section": "Chapter 1: Foundations",
+    "title": "Hello World",
+    "subtopics": [
+      {
+        "id": "organisation-and-hello-world",
+        "name": "Organisation and Hello World",
+        "taskIds": [
+          "hello-discover-tool-check-v1",
+          "hello-guided-run-program-v1"
+        ]
+      },
+      {
+        "id": "floating-point-and-conditionals",
+        "name": "Floating-point numbers and conditionals",
+        "taskIds": ["hello-make-condition-v1"]
+      }
+    ],
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w1/"
+  },
+  {
+    "id": "course-topic-02",
+    "order": 2,
+    "section": "Chapter 1: Foundations",
+    "title": "Loops and methods",
+    "subtopics": [
+      {
+        "id": "booleans-and-loops",
+        "name": "Booleans and loops",
+        "taskIds": [
+          "loops-discover-trace-v1",
+          "loops-guided-countdown-v1",
+          "loops-teach-condition-v1"
+        ]
+      },
+      {
+        "id": "methods",
+        "name": "Methods",
+        "taskIds": ["methods-solo-temperature-v1"]
+      }
+    ],
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w2/"
+  },
+  {
+    "id": "course-topic-03",
+    "order": 3,
+    "section": "Chapter 1 / Chapter 2 transition",
+    "title": "Stack, heap and arrays",
+    "subtopics": [
+      {
+        "id": "stack-recursion-and-characters",
+        "name": "Stack, recursion and characters",
+        "taskIds": []
+      },
+      {
+        "id": "arrays",
+        "name": "Arrays",
+        "taskIds": [
+          "arrays-guided-index-v1",
+          "arrays-boss-find-largest-v1"
+        ]
+      }
+    ],
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w3/"
+  },
+  {
+    "id": "course-topic-04",
+    "order": 4,
+    "section": "Chapter 2: Objects",
+    "title": "Objects",
+    "subtopics": [
+      {
+        "id": "multidimensional-arrays",
+        "name": "Multidimensional arrays",
+        "taskIds": []
+      },
+      {
+        "id": "object-methods-and-strings",
+        "name": "Object methods and Strings",
+        "taskIds": []
+      }
+    ],
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w4/"
+  },
+  {
+    "id": "course-topic-05",
+    "order": 5,
+    "section": "Chapter 3: User-defined classes",
+    "title": "Classes and interfaces",
+    "subtopics": [
+      {
+        "id": "writing-custom-classes",
+        "name": "Writing custom classes",
+        "taskIds": []
+      },
+      {
+        "id": "interfaces-and-polymorphism",
+        "name": "Interfaces and polymorphism",
+        "taskIds": []
+      }
+    ],
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w5/"
+  },
+  {
+    "id": "course-topic-06",
+    "order": 6,
+    "section": "Chapter 3: User-defined classes",
+    "title": "Inheritance",
+    "subtopics": [
+      {
+        "id": "inheritance",
+        "name": "Inheritance",
+        "taskIds": []
+      },
+      {
+        "id": "overriding",
+        "name": "Overriding",
+        "taskIds": []
+      }
+    ],
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w6/"
+  },
+  {
+    "id": "course-topic-07",
+    "order": 7,
+    "section": "Chapter 3 / Chapter 4 transition",
+    "title": "Lists and throwing exceptions",
+    "subtopics": [
+      {
+        "id": "enums-and-records",
+        "name": "Enums and records",
+        "taskIds": []
+      },
+      {
+        "id": "singly-linked-lists",
+        "name": "Singly linked lists",
+        "taskIds": []
+      }
+    ],
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w7/"
+  },
+  {
+    "id": "course-topic-08",
+    "order": 8,
+    "section": "Chapter 4: Dynamic data structures and performance",
+    "title": "Generics and search",
+    "subtopics": [
+      {
+        "id": "generics",
+        "name": "Generics",
+        "taskIds": []
+      },
+      {
+        "id": "search-algorithms",
+        "name": "Search algorithms",
+        "taskIds": []
+      }
+    ],
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w8/"
+  },
+  {
+    "id": "course-topic-09",
+    "order": 9,
+    "section": "Chapter 4: Dynamic data structures and performance",
+    "title": "Sorting",
+    "subtopics": [
+      {
+        "id": "sorting-algorithms",
+        "name": "Sorting algorithms",
+        "taskIds": []
+      },
+      {
+        "id": "comparable",
+        "name": "Comparable",
+        "taskIds": []
+      }
+    ],
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w9/"
+  },
+  {
+    "id": "course-topic-10",
+    "order": 10,
+    "section": "Chapter 4: Dynamic data structures and performance",
+    "title": "Data structures for fast search",
+    "subtopics": [
+      {
+        "id": "binary-search-trees",
+        "name": "Binary search trees",
+        "taskIds": []
+      },
+      {
+        "id": "hash-sets",
+        "name": "Hash sets",
+        "taskIds": []
+      }
+    ],
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w10/"
+  },
+  {
+    "id": "course-topic-11",
+    "order": 11,
+    "section": "Chapter 5: Java class library",
+    "title": "Packages and class library",
+    "subtopics": [
+      {
+        "id": "comparing-data-structures-and-packages",
+        "name": "Comparing data structures; packages",
+        "taskIds": []
+      },
+      {
+        "id": "classpath-and-arraylist",
+        "name": "Classpath and ArrayList",
+        "taskIds": []
+      }
+    ],
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w11/"
+  },
+  {
+    "id": "course-topic-12",
+    "order": 12,
+    "section": "Chapter 5: Java class library",
+    "title": "Collections Framework and files",
+    "subtopics": [
+      {
+        "id": "collections-framework-and-catching-exceptions",
+        "name": "Collections Framework and catching exceptions",
+        "taskIds": []
+      },
+      {
+        "id": "standard-input-and-pipelining",
+        "name": "Standard input and pipelining",
+        "taskIds": []
+      }
+    ],
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w12/"
+  },
+  {
+    "id": "course-topic-13",
+    "order": 13,
+    "section": "Chapter 5: Java class library",
+    "title": "Higher-order functions and testing",
+    "subtopics": [
+      {
+        "id": "higher-order-functions",
+        "name": "Higher-order functions",
+        "taskIds": []
+      },
+      {
+        "id": "testing-build-tools-and-ides",
+        "name": "Testing, build tools and IDEs",
+        "taskIds": []
+      }
+    ],
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w13/"
+  },
+  {
+    "id": "course-topic-14",
+    "order": 14,
+    "section": "Chapter 5 / Chapter 6",
+    "title": "Streams and tools",
+    "subtopics": [
+      {
+        "id": "java-stream-api",
+        "name": "Java Stream API",
+        "taskIds": []
+      },
+      {
+        "id": "version-control-and-useful-tools",
+        "name": "Version control and other useful tools",
+        "taskIds": []
+      }
+    ],
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w14/"
+  },
+  {
+    "id": "course-topic-15",
+    "order": 15,
+    "section": "Review",
+    "title": "Revision and examination preparation",
+    "subtopics": [
+      {
+        "id": "question-and-answer-review",
+        "name": "Question-and-answer review",
+        "taskIds": []
+      },
+      {
+        "id": "full-course-revision",
+        "name": "No new content (full-course revision)",
+        "taskIds": []
+      }
+    ],
+    "sourceUrl": "https://hsp.pages.cs.uni-duesseldorf.de/programmierung/website/lectures/progra/w15/"
+  }
+]

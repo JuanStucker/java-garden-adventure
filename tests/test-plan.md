@@ -1,4 +1,4 @@
-# v0.1 browser test plan
+# Browser test plan
 
 Run against both the local server and the production GitHub Pages URL.
 
@@ -9,20 +9,25 @@ Run against both the local server and the production GitHub Pages URL.
 3. Enter a display name and reach Home.
 4. Select each energy option and each duration preference.
 5. Confirm no more than three recommendations appear.
-6. Open the first quest, start it, reveal one hint, and pause it.
-7. Return to the quest, mark it stuck, and save attempts, an error, and a tutor
+6. Open the first learning task, start it, reveal one hint, and pause it.
+7. Return to the task, mark it stuck, and save attempts, an error, and a tutor
    question.
 8. Confirm the content appears safely in Tutor Corner.
-9. Resume the quest and complete it with time, confidence, and evidence.
-10. Confirm XP, completion feedback, an unlocked quest, and garden growth.
+9. Resume the task and complete it with time, confidence, and evidence.
+10. Confirm XP, completion feedback, an unlocked task, and garden growth.
 11. Refresh and close/reopen the browser; confirm progress remains.
+12. Open Topics and confirm all 15 topics and 30 actual subtopics appear.
+13. Change a subtopic between understood, unclear, unchecked, and automatic.
+14. Answer a Q&A check incorrectly, read the explanation, retry, and confirm the
+    correct state persists.
+15. Open Garden and confirm its 15 beds match the course-topic states.
 
 ## State and data
 
-- Locked quests cannot be started or recommended.
-- Completing the same quest cannot award XP twice.
-- Only one quest is active at a time.
-- Paused and stuck quests remain available after reload.
+- Locked tasks cannot be started or recommended.
+- Completing the same task cannot award XP twice.
+- Only one task is active at a time.
+- Paused and stuck tasks remain available after reload.
 - Returning from stuck records the clover reward and awards the one-time bonus.
 - Reset requires the explicit confirmation checkbox.
 - Invalid stored JSON falls back to a usable fresh state with a warning.

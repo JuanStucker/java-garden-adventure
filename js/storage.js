@@ -14,6 +14,7 @@
         duration: "none",
         reducedMotion: false
       },
+      topicAssessments: {},
       questProgress: {},
       totalXP: 0,
       activeQuestId: null,
@@ -47,10 +48,17 @@
 
     const defaults = freshState();
     const preferences = safeObject(value.preferences, {});
+    const topicAssessments = safeObject(value.topicAssessments, {});
     const questProgress = safeObject(value.questProgress, {});
-    const profile = value.profile === null
+    const loadedProfile = value.profile === null
       ? null
       : safeObject(value.profile, null);
+    const profile = loadedProfile
+      ? {
+          ...loadedProfile,
+          mascot: "tintinsito-bunny"
+        }
+      : null;
 
     return {
       ...defaults,
@@ -64,6 +72,7 @@
           : defaults.preferences.duration,
         reducedMotion: Boolean(preferences.reducedMotion)
       },
+      topicAssessments,
       questProgress,
       totalXP: Number.isFinite(Number(value.totalXP))
         ? Math.max(0, Number(value.totalXP))

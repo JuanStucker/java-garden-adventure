@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta
       name="description"
-      content="Java Garden Adventure turns beginner Java topics into small, gentle learning quests."
+      content="Java Garden Adventure turns a beginner Java syllabus into clear topics, small learning tasks, and visible progress."
     >
     <meta name="theme-color" content="#fff9f0">
     <title>Java Garden Adventure</title>
-    <link rel="icon" href="./assets/momo.svg" type="image/svg+xml">
+    <link rel="icon" href="./assets/tintinsito.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./css/styles.css">
     <script src="./js/storage.js" defer></script>
     <script src="./js/recommendations.js" defer></script>
@@ -21,7 +21,7 @@
     <div class="site-shell">
       <header class="site-header" id="site-header">
         <button class="brand" type="button" data-nav="home" aria-label="Go to home">
-          <img src="./assets/momo.svg" alt="" width="52" height="52">
+          <img src="./assets/tintinsito.svg" alt="" width="52" height="52">
           <span>
             <span class="brand-kicker">Java Garden</span>
             <span class="brand-name">Adventure</span>
@@ -57,7 +57,7 @@
         </button>
         <button type="button" data-nav="quests">
           <span aria-hidden="true">✦</span>
-          <span>Quests</span>
+          <span>Topics</span>
         </button>
         <button type="button" data-nav="garden">
           <span aria-hidden="true">❀</span>
@@ -75,8 +75,8 @@
 
       <main id="app-main" tabindex="-1">
         <section class="loading-state" aria-live="polite">
-          <img src="./assets/momo.svg" alt="" width="88" height="88">
-          <p>Momo is opening the garden gate…</p>
+          <img src="./assets/tintinsito.svg" alt="" width="88" height="88">
+          <p>Tintinsito is opening the garden gate…</p>
         </section>
       </main>
 
@@ -122,7 +122,7 @@
       <form id="complete-form">
         <div class="dialog-heading">
           <div>
-            <span class="eyebrow">Quest reflection</span>
+            <span class="eyebrow">Task reflection</span>
             <h2 id="complete-title">What changed while you worked?</h2>
           </div>
           <button class="icon-button" type="button" data-close-dialog="complete-dialog">
@@ -167,7 +167,7 @@
         <p class="form-error" id="complete-error" role="alert" hidden></p>
         <div class="dialog-actions">
           <button class="button button-quiet" type="button" data-close-dialog="complete-dialog">Not yet</button>
-          <button class="button button-primary" type="submit">Complete quest</button>
+          <button class="button button-primary" type="submit">Complete task</button>
         </div>
       </form>
     </dialog>
@@ -184,7 +184,7 @@
             <span aria-hidden="true">×</span>
           </button>
         </div>
-        <p>This removes your name, quest history, tutor notes, XP, and garden growth from this browser.</p>
+        <p>This removes your name, topic-task history, tutor notes, XP, and garden growth from this browser.</p>
         <p>Backup export is coming in the next update. Do not reset if you want to keep this progress.</p>
         <label class="check-row danger-check">
           <input id="confirm-reset" type="checkbox">
@@ -202,7 +202,7 @@
 
     <noscript>
       <div class="noscript-message">
-        Java Garden Adventure needs JavaScript to remember progress and recommend quests.
+        Java Garden Adventure needs JavaScript to remember progress and recommend learning tasks.
         Please enable JavaScript and reload the page.
       </div>
     </noscript>

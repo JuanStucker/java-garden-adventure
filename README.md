@@ -1,24 +1,29 @@
 # Java Garden Adventure
 
 Java Garden Adventure is a gentle, schedule-free companion for an introductory
-Java course. It recommends a few small quests based on the learner's current
-energy and available time, then records progress locally in the browser.
+Java course. It presents the complete syllabus as topics and subtopics,
+recommends a few small learning tasks based on the learner's current energy and
+available time, and records progress locally in the browser.
 
 Live site: <https://juanstucker.github.io/java-garden-adventure/>
 
-## v0.1 features
+## Current features
 
-- nine hand-curated quests covering Hello World, loops and methods, and arrays;
+- a global map of all 15 syllabus topics and 30 named subtopics;
+- understood, unclear, and unchecked states derived from tasks or set manually;
+- nine hand-curated learning tasks covering Hello World, loops and methods, and
+  arrays;
+- interactive multiple-choice checks with immediate correct/incorrect feedback;
 - low, medium, high, and surprise-me recommendations;
-- quest prerequisites, hints, evidence checks, confidence, and XP;
+- task prerequisites, hints, evidence checks, confidence, and XP;
 - start, pause, stuck, resume, and completion workflows;
 - a Tutor Corner for saved questions and error context;
-- a simple garden that grows with completed work;
+- a 15-bed garden that mirrors understanding across the complete course;
 - responsive, keyboard-friendly pages with reduced-motion support;
 - local-only progress with no account, tracking, backend, or database.
 
 This companion does not replace the official course pages, exercises, lectures,
-or tutor. Each quest links to its corresponding HHU Programmierung topic page.
+or tutor. Every course topic links to its corresponding HHU Programmierung page.
 
 ## Run locally
 
@@ -40,24 +45,27 @@ browsers block local JSON requests.
 python3 scripts/validate_content.py
 ```
 
-The validator checks stable IDs, world references, prerequisite references,
-cycles, allowed quest values, evidence requirements, and local assets. GitHub
-Actions runs the same check on pushes and pull requests.
+The validator checks course topics, subtopics, stable task IDs, world references,
+prerequisites, cycles, multiple-choice answer definitions, evidence requirements,
+and local assets. GitHub Actions runs the same check on pushes and pull requests.
 
 ## Content editing
 
-World definitions live in `data/worlds.json`; learner activities live in
-`data/quests.json`. Progress is linked through stable quest IDs, so reordering
-content does not erase browser progress.
+The complete syllabus map lives in `data/course-topics.json`, world definitions
+live in `data/worlds.json`, and learner activities live in `data/quests.json`.
+The historical filename is retained for progress compatibility. Progress is
+linked through stable task IDs, so reordering content does not erase browser
+progress.
 
-When adding a quest:
+When adding a learning task:
 
 1. choose a descriptive ID that ends in a version, such as
    `arrays-solo-sum-values-v1`;
 2. reference an existing world;
 3. reference only existing prerequisite IDs;
 4. include instructions, evidence checks, and progressive hints;
-5. run the validator before committing.
+5. optionally include validated multiple-choice questions with explanations;
+6. run the validator before committing.
 
 The initial content was adapted from the supplied Winter Semester 2025/26 HHU
 Programmierung syllabus. Historical course deadlines are deliberately absent
@@ -70,7 +78,7 @@ Learner names, progress, reflections, confidence, error messages, and tutor
 questions remain in that learner's browser via `localStorage`.
 
 Clearing browser site data removes progress. JSON backup import/export is
-planned for v0.2.
+planned for a follow-up release.
 
 ## Repository status
 
